@@ -1,13 +1,11 @@
 # The role of state investment banks for renewable energy technologies in OECD countries
-Replication materials for Waidelich and Steffen (2023). If you have questions about the code or find any errors/bugs, please contact Paul Waidelich at paul.waidelich@gess.ethz.ch (corresponding author).
-
-NOTE: THIS CLEAN REPOSITORY SERVES FOR THE REVIEW PROCESS ONLY TO ALLOW FOR TRANSPARENCY REGARDING THE SCRIPTS & ANALYSES UNDERLYING THE SUBMITTED MANUSCRIPT. AS SOME OF THE DATA OBJECTS IN THE `input` FOLDER FEATURE PROPRIETARY BNEF INFORMATION, THEY CANNOT BE INCLUDED IN THIS PUBLISHED VERSION OF THE REPOSITORY.
+Replication materials for Waidelich and Steffen (2023). If you have questions about the code or find any errors/bugs, please contact Paul Waidelich at paul.waidelich [at] gess.ethz.ch (corresponding author).
 
 ## Organization of the overall project repository
 The repository features the following elements:
-1. The `input` folder, which hosts all data objects (in RDS format) required to replicate all figures, tables, and analyses in the manuscript. Note that for all public repositories, we upload censored versions of data files that do not contain proprietary information from the underlying Bloomberg New Energy Finance databases and instead feature "-999" placeholder values (and FALSE for logical variables). However, these files have the same structure and feature identifier variables, enabling BNEF license holders to merge in the actual information.
-2. The `src` folder for scripts, which hosts the script replicating all figures, tables and analyses in the manuscript (`src/replication_main.R`). Note that for some tables, our manuscript applies some additional formatting in LaTeX to the raw output of the script.
-3. The `figures` folder, where all figures produced by `src/replication_main.R` are stored as PDF files with a date stamp in the file name. In its original state, the repository features all figures as returned by the script at the time of submission.
+1. The `input` folder, which hosts all data objects (in RDS format) required to replicate all figures, tables, and analyses in the manuscript. 
+2. The `src` folder for scripts, which hosts the script replicating all figures, tables and analyses in the manuscript (`src/replication_main.R`). Note that for some tables, our manuscript applies some additional formatting in LaTeX to the raw output of the script. Before running `src/replication_main.R`, please set the working directory to the highest folder level of this repository, which can be easily done by opening the `sibs_retechnologies_oecd.Rproj` via RStudio on your local machine.
+3. The `figures` folder, where all figures produced by `src/replication_main.R` are stored as PDF files with a date stamp in the file name. In its original state, the repository features all figures as returned by the script at the time of submission. By executing `src/replication_main.R`, new versions with the current date stamp will be added to the folder.
 
 ## Data objects in the `input` folder
 The  `input` features the following RDS files, which are loaded and processed by the `src/replication_main.R` script:
@@ -16,6 +14,77 @@ The  `input` features the following RDS files, which are loaded and processed by
 3. `input/sib_table.rds`: an organization-level data frame/tibble object with one row per SIB institution/subsidiary (column `Organization_Name`). Subsidiaries are connected to the parent (`main_institution`). Aside from additional organization-level information from the BNEF Organizations database, the object features all deal IDs on which the respective SIB institution/subsidiary is listed as a lender in the BNEF Asset Finance database (`transaction_ids_in_df_reg`) as well as the total number of such transactions (`No_transactions_in_df_reg`)
 4. `input/df_capshare_irena.rds`: data frame/tibble object with one row per country-year-RE technology combination that features the respective technology's share in the country's installed capacity as per IRENA data. Details on how the data is obtained can be found in Appendix A of the manuscript.
 5. `input/df_fit_oecd.rds`: data frame/tibble object with one row per country-year-RE technology combination that features the inflation-adjusted feed-in tariff. Details on how the data is obtained can be found in Appendix A of the manuscript.
+
+## Censored commercial data from Bloomberg New Energy Finance (BNEF)
+Please note that `input/df.rds`, `input/sib_table.rds`, and `input/df_lenders.rds` feature commercial and proprietary data from BNEF that can only be shared with license holders. Therefore, this repository features only censored versions of data files that do not contain proprietary information from the underlying BNEF databases and instead feature "-999" placeholder values (and FALSE for logical variables). However, these files have the same structure and feature original identifier variables, enabling BNEF license holders to merge the actual information. For access to the uncensored data, please contact the corresponding author with proof that you are a current BNEF license holder.
+Unless uncensored data has been made available and placed in the `input` directory, the lines in `src/replication_main.R` that load the (uncensored) data objects will result in errors. 
+
+## Variable names in the data frames
+Please note that extensive variable descriptions and information on underlying data sources are listed in Appendix A of the Online Appendix. Therefore, the following list primarily serves to match the columns in the data objects with the variables described in Appendix A and provides more information only for identifier or helper columns not listed in Appendix A.
+
+### Variables in `input/df.rds`
+1. `Asset_Finance_ID`: Financial transaction ID from the BNEF Asset Finance database
+2. `is_sib_len`: I(SIB lending) - see Appendix A
+3. `year_of_close`: Closing year - see Appendix A
+4. `year_of_close_chr`: Closing year, coded as a character instead of an integer
+5. `proj_Country`: Project country - see Appendix A
+6. `Sector_final`: Technology - see Appendix A
+7. `fin_Capacity_total_MW`: Capacity (MW) - see Appendix A
+8. `fin_capacity_techyear_decile1`: I(Cap. in 1st decile) - see Appendix A
+9. `no_lenders_wo_sibs`: # of non-SIB lenders - see Appendix A
+10. `countrytech_withdebt_first...`: I(First-k deal) - see Appendix A 
+11. `is_fin_termloan`: I(Term loan) - see Appendix A
+12. `has_public_sponsor`: I(Any public sponsor) - see Appendix A
+13. `fin_capacity_techyear_decile1`: I(Cap. in 1st decile) - see Appendix A
+14. `fin_capacity_techyear_decilebin`: The decile in which the transaction falls based on the methodology underlying I(Cap. in 1st decile) in Appendix A
+15. `is_lender_notreported`: A dummy variable indicating whether lenders for the transaction in the BNEF Asset Finance database are listed as "Not Reported". This is used for robustness checks excluding these deals.
+16. `no_lenders`: # of lenders on the transaction, incl. both SIB and non-SIB lenders
+17. `is_mature`: I(Tech matured) - see Appendix A
+18. `oecd_feedintariff`: Feed-in tariff (2010 USD/kWh) - see Appendix A
+19. `capshare_irena`: Share of the transaction's technology in national installed capacity used to calculate I(Tech matured) as outlined in Appendix A
+20. `gdp_growth`: Real GDP PPP growth (in %) - see Appendix A
+21. `ccpi_overall_score`: CCPI Overall Score (0-100) - see Appendix A
+22. `oecd_ltinterest_perc`: Long-term interest rate (%) - see Appendix A
+23. `gfd_bankzscore`: Country Bank Z-score - see Appendix A
+24. `wdi_govexpend_percgdp`: Gov. expenditures (% of GDP) - see Appendix A
+25. `wdi_primarybal_percgdp`: Primary balance (% of GDP) - see Appendix A
+26. `sib_lending_debtshare`: The share of total debt of the transaction that is (jointly) provided by SIBs listed in `input/sib_table.rds`, ranging from zero (= no SIB debt financing) to one (= only SIB debt financing). This involves both known and imputed values following the methodology outlined in Appendix D of the Online Appendix. 
+27. `SIB_lending_certainty`: Indicates if the value in `sib_lending_debtshare` is `Known`, `Imputable` (= imputed), or `Unknown` (in which case `sib_lending_debtshare` is `NA`). The variable is `NA` for all deals w/o SIB lenders. Note that for one transaction, BNEF information does not inform about the exact allocation of debt across different SIBs, but their combined financing is known. This is marked by a value of `Unclear allocation across SIBs, known total`
+
+### Variables in `input/df_lenders.rds`
+1. `Asset_Finance_ID`: see above
+2. `Organization_Name`: Organization name from the BNEF Organizations database
+3. `Organization_ID`: Organization ID from the BNEF Organizations database
+4. `Role`: The organization's role in the transaction, as per the BNEF Asset Finance database. Since we only consider lenders, this can be either `Lead arranger` or `Syndicated lender`
+5. `lender_classification`: Classifies each lender into one of the following categories: `SIBs`, `Other public sector`, `Private banks`, `Other financial companies`, `Other private sector` or `Unknown`. Classification is obtained based on the BICS classification scheme or, if this information is not available, based on the Subactivity variable of the organization in the BNEF Organizations database. For SIBs included in `input/sib_table.rds`, the value is always `SIBs` regardless of their BICS or Subactivity information
+
+### Variables in `input/sib_table.rds`
+1. `main_institution`: The ultimate parent company of SIB subsidiaries, as per the BNEF Organizations database. For the parent SIB, this is equal to the `Organization_Name`
+2. `Organization_Name`: See above
+3. `No_transactions_in_df_reg`: The number of transactions in `input/df.rds`, in which the organization appears as a lender
+4. `transaction_ids_in_df_reg`: The financial transaction IDs of all transactions, in which the organization appears as a lender. This is a listed column where each row stores as many IDs as the value of `No_transactions_in_df_reg` indicates
+5. `Organization_ID`: See above
+6. `Organization_ID`: The parent company as per the BNEF Organizations database
+7. `Country`: The organization's country as per the BNEF Organizations database
+8. `Subactivity`: The organization's subactivity as per the BNEF Organizations database
+9. `Website`: The organization's website as per the BNEF Organizations database
+10. `is_main`: A dummy variable indicating whether the organization is the ultimate parent SIB (`TRUE`) or a subsidiary (`FALSE`)
+
+### Variables in `input/df_capshare_irena.rds`:
+NOTE: For more detailed information on how IRENA data on national installed capacity is obtained, see Appendix A of the Online Appendix
+1. `Year`: Year
+2. `Country`: Country
+3. `Sector_final`: Technology - see Appendix A
+4. `capshare_irena`: See above
+
+### Variable names in `input/df_fit_oecd.rds`:
+NOTE: For more detailed information on how FiT data is obtained, see Appendix A of the Online Appendix
+1. `COU`: Three-character country code (e.g., `AUS`)
+2. `Year`: Year
+3. `Sector_final`: See above
+4. `Mean feed-in tariff`: Feed-in tariff (2010 USD/kWh) - see Appendix A
+5. `Length of power purchase agreement`: An additional variable from the OECD data on feed-in tariffs that is not used in our paper
+6. `bnef_name`: The country name as it appears in the BNEF database
 
 ## System requirements
 The script can be executed on an ordinary computer and requires neither substantial computational resources nor parallel processing. Total runtime is less than 2min using a computer with an i7-1185G7 @ 3GHz processor and 32 GB RAM.
